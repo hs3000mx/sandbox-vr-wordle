@@ -16,17 +16,22 @@ export default function Home() {
   
   const [answer, setAnswer] = useState<string[]>([]);
 
+  //Initialize the answer from WORD_LIST
   useEffect(() => {
     const randomIndex = Math.floor(Math.random() * WORD_LIST.length);
     setAnswer(WORD_LIST[randomIndex])
   }, [])
 
+
+  //DEBUG ONLY
   useEffect(() => {
     console.log(answer)
   }, [answer])
   
+  //Stores user submitted attempts
   const [submittedRows, setSubmittedRows] = useState<{attempt: string[], attemptResults: InputFeedback[]}[]>([]);
 
+  //Populates user submitted attempts along with attempt feedback using Solver.checkAnswer
 	const handleInputSubmit = (letters: string[]) => {
     const attemptResults = Solver.checkAnswer(answer, letters)
     setSubmittedRows((prev) => [...prev, 
