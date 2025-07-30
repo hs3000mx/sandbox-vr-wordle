@@ -1,0 +1,34 @@
+.row {
+    flex-direction: row;
+	display: flex;
+	gap: 8px;
+	margin-bottom: 8px;
+}
+
+.box {
+	width: 56px;
+	height: 56px;
+	border: 2px solid #ccc;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 24px;
+	font-weight: bold;
+	text-transform: uppercase;
+}
+
+/* Feedback styles */
+.hit {
+	background-color: #6aaa64; /* green */
+	border-color: #6aaa64;
+}
+
+.present {
+	background-color: #c9b458; /* yellow */
+	border-color: #c9b458;
+}
+
+.miss {
+	background-color: #787c7e; /* gray */
+	border-color: #787c7e;
+}
