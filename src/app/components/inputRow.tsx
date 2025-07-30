@@ -2,8 +2,9 @@
 
 import { useRef } from "react";
 import styles from "@/app/components/inputRow.module.css";
+import { GameState } from "@/lib/enums/gameState";
 
-export default function InputRow({ onSubmit }: { onSubmit: (letters: string[]) => void }) {
+export default function InputRow({ onSubmit, gameState }: { onSubmit: (letters: string[]) => void, gameState: GameState }) {
 	const inputs = useRef<Array<HTMLInputElement | null>>([]);
 
 	const handleLetterTyped = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
@@ -36,6 +37,7 @@ export default function InputRow({ onSubmit }: { onSubmit: (letters: string[]) =
 		<div className={styles.row}>
 			{Array.from({ length: 5 }).map((_, i) => (
 				<input
+                    disabled={gameState != GameState.NEUTRAL}
 					key={i}
 					ref={(el) => {
 						inputs.current[i] = el;
