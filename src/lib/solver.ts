@@ -18,6 +18,7 @@ export default class Solver {
         })
 
         //For any letters that did NOT HIT, we check if they exist at a different position of the _answer
+        //This does not check if the number of existances of the same letters are equal between the _answer and _attempt, it will unconditionally set any occurances that exist as PRESENT
         results.forEach((_result, _index) => {
             if(_result != InputFeedback.HIT) {
                 if(_answer.includes(_attempt[_index])) {
