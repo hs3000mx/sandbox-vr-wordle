@@ -67,7 +67,7 @@ export default function Home() {
 
 
   //Helper function that returns a simple element for a given game state
-  function renderGameState() {
+  const renderGameState = () => {
     switch (gameState) {
       case GameState.WIN:
         return <h1>You win! 🎉</h1>;
