@@ -1,6 +1,6 @@
 'use client'
 
-import { MAX_GUESSES, WORD_LIST } from "@/config"; //WARNING: The word list can be seen client side 
+import { MAX_GUESSES, WORD_LIST } from "@/app/api/config"; //WARNING: The word list can be seen client side 
 import Solver from "@/lib/solver";
 
 import { useEffect, useState } from "react";

@@ -4,6 +4,6 @@ export const sessionOptions = {
 }
 
 export type sessionData = {
-    answer: string,
+    answer: Array<string>,
     attempts: number
 }
