@@ -1,9 +1,9 @@
 export const sessionOptions = {
-	cookieName: 'task2_session',
+	cookieName: 'task4_session',
 	password: process.env.SESSION_SECRET as string
 }
 
 export type sessionData = {
-    answer: Array<string>,
+    candidates: string[][],
     attempts: number
 }

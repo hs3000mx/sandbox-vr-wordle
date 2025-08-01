@@ -11,10 +11,6 @@ export async function POST(req: Request) {
         //initialize the users session to make sure a session object exists
         await initializeSession()
 
-        //select a random answer from the WORD_LIST and store in session data
-        const randomIndex = Math.floor(Math.random() * WORD_LIST.length);
-        await setSession(WORD_LIST[randomIndex], null)
-
         //confirm contents of new session
         const newSession = await getSession()
         
