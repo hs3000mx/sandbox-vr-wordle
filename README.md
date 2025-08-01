@@ -1,5 +1,8 @@
-This is a project based on wordle implementing multiple tasks
+This is a project based on wordle implementing tasks 1, 2 and 3
 ## Getting Started
+
+Node Version used:
+v22.13.1
 
 First install necessary npm packages:
 ```bash
@@ -11,17 +14,17 @@ Then, run the development server:
 npm run dev
 ```
 
-## Learn More
+## How to change the word list and maximum guess count
+Change the MAX_GUESSES and WORD_LIST values in [config.ts](src/app/api/config.ts)
 
-To learn more about Next.js, take a look at the following resources:
+## Coding Considerations
+### [page.tsx](https://github.com/hs3000mx/sandbox-vr-wordle/blob/master/src/app/page.tsx)
+There are two backend API calls made there. Since the functionality is relatively self contained within the same page, I have left the API calling code in the same file. If more functionality was required or the API was more fragmented, it would be better more maintainable to refactor them into another file.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### [inputRow.tsx](src/app/components/inputRow.tsx) and [row.tsx](src/app/components/row.tsx)
+These two .tsx components share similar CSS styling, it would be possible to refactor their .module.css into a singular file. However, considering the possible expansion of each feature, I thought it would be best to separate them despite some redundant code. A shared .css file could also work if the amount of redundant code is too large.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### [absurd_solver.ts](src/app/api/lib/absurd_solver.ts)
+I filter for least number of hits, and then to least number of present. Finally, I just choose the first item in the array if there is more than one group left; by doing so, it should always have only one suitable group/feedback pattern that is returned to the user.
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+However, this leaves the algorithm to be undeterministic, which could be an area to improve upon given more time.
