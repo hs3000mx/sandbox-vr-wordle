@@ -1,8 +1,5 @@
 'use client'
 
-import { MAX_GUESSES, WORD_LIST } from "@/app/api/config"; //WARNING: The word list can be seen client side 
-import Solver from "@/lib/solver";
-
 import { useEffect, useState } from "react";
 
 import styles from "./page.module.css";
@@ -12,29 +9,66 @@ import { InputFeedback } from "@/lib/enums/inputFeedback";
 import { GameState } from "@/lib/enums/gameState";
 
 export default function Home() {
-  
+
+  const [loading, setLoading] = useState<boolean>(true)
+  const [maxGuesses, setMaxGuesses] = useState<number>(0)
   const [gameState, setGameState] = useState<GameState>(GameState.NEUTRAL)
-  const [answer, setAnswer] = useState<string[]>([]);
   const [guessCount, setGuessCount] = useState<number>(0); 
 
-  //Initialize the answer from WORD_LIST
+  //call /api/start-game to initialize game and user session
+  const startGame = async() => {
+    try {
+      const res = await fetch('/api/start-game', {
+        method: "POST"
+      })
+      const data = await res.json()
+      console.log("Game started: ", data)
+      setMaxGuesses(data.data.max_guesses)
+      setLoading(false)
+    }
+    catch(error) {
+      console.log("Failed to start game: ", error)
+    }
+  }
+
+  //call /api/submit-attempt to check answers
+  const submitAttempt = async(attempt: string[]) => {
+    try {
+      const res = await fetch('/api/submit-attempt', {
+        method: "POST",
+        body: JSON.stringify({
+          attempt: attempt
+        })
+      })
+      const data = await res.json()
+      if(data.status != 200) throw new Error 
+      console.log("Submitted attempt: ", data)
+      return data
+    }
+    catch(error) {
+      console.log("Failed to submit attempt: ", error)
+    }
+  }
+
+  //Start game -> runs once per load
   useEffect(() => {
-    const randomIndex = Math.floor(Math.random() * WORD_LIST.length);
-    setAnswer(WORD_LIST[randomIndex])
+    startGame()
   }, [])
-
-
-  //DEBUG ONLY
-  useEffect(() => {
-    console.log(answer)
-  }, [answer])
   
   //Stores user submitted attempts
   const [submittedRows, setSubmittedRows] = useState<{attempt: string[], attemptResults: InputFeedback[]}[]>([]);
 
-	const handleInputSubmit = (letters: string[]) => {
-    //Populates user submitted attempts along with attempt feedback using Solver.checkAnswer
-    const attemptResults = Solver.checkAnswer(answer, letters)
+
+  //Refactor checkAnswer with backend API call
+	const handleInputSubmit = async(letters: string[]) => {
+    const attemptData = await submitAttempt(letters)
+    
+    //skip further game state checking if 200 status is not returned
+    if(attemptData?.status != 200) return
+    
+    //extract attempt_feedback from response body
+    const attemptResults = attemptData?.data?.attempt_feedback
+
     setSubmittedRows((prev) => [...prev, 
       {
         attempt: letters,
@@ -51,7 +85,7 @@ export default function Home() {
         setGameState(GameState.WIN)
       }
       //If the player loses
-      else if(newGuessCount >= MAX_GUESSES) {
+      else if(newGuessCount >= maxGuesses) {
         setGameState(GameState.LOSS)
       }
 
@@ -80,13 +114,25 @@ export default function Home() {
   }
 
 
+  //prevent user input during initialization API call
+  if(loading) {
+    return (
+      <div className={styles.page}>
+        <main className={styles.main}>
+          <h2>Loading game...</h2>
+        </main>
+      </div>
+    )
+  }
+
+  //refactored maxGuesses to inherit value from startGame() call
 	return (
 		<div className={styles.page}>
 			<main className={styles.main}>
 
         <div>
           <h1>
-            {`Maximum Guesses: ${MAX_GUESSES}`}
+            {`Maximum Guesses: ${maxGuesses}`}
           </h1>
           <h2>
             {`Current Guesses: ${guessCount}`}

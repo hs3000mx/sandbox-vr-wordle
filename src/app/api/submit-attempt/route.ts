@@ -7,6 +7,7 @@ import { FlexibleError } from "@/app/api/lib/flexibleError";
 
 export async function POST(req: Request) {
 
+    //Validation ZOD objects to validate input and session data
     const AttemptBody = z.object({
         "attempt": z.array(z.string().length(1)).length(5)
     })
@@ -17,6 +18,8 @@ export async function POST(req: Request) {
     })
 
     try {
+
+        //validating and parsing request body
         console.log("---------------------------")
         console.log("Running Submit Attempt...")
         const _body = await req.json()
@@ -24,21 +27,24 @@ export async function POST(req: Request) {
         const parsedBody = AttemptBody.parse(_body)
         console.log(parsedBody)
 
-
+        //fetching user session, validating and parsing
         const session = await getSession()
         console.log("Validating Session Data...")
         const parsedSessionData = SessionValidation.parse(session)
         console.log(parsedSessionData)
 
+        //ensure max guesses are not reached for current game
         console.log("Validating Max Guesses/Attempts...")
         if(parsedSessionData.attempts >= MAX_GUESSES) {
             throw new FlexibleError("Max guesses already reached!", 403)
         }
 
+        //get feedback on attempt using the solver
         console.log("Validating User Attempt...")
         const attemptFeedback = Solver.checkAnswer(parsedSessionData.answer, parsedBody.attempt)
         console.log(attemptFeedback)
 
+        //increment their attempt count and fetch latest session state
         console.log("Incrementing Player Attempt...")
         await setSession(null, parsedSessionData.attempts + 1)
         const finalizedSessionData = await getSession()
